@@ -5,21 +5,29 @@ part 'clothing_item.g.dart';
 @HiveType(typeId: 0)
 class ClothingItem {
   @HiveField(0)
-  final String name;
+  String name;
 
   @HiveField(1)
-  final String color;
+  String color;
 
   @HiveField(2)
-  final String dateAdded;
+  String dateAdded;
 
   @HiveField(3)
-  final String category;
+  String category;
+
+  @HiveField(4)
+  String season;
+
+  @HiveField(5)
+  String imagePath;
 
   ClothingItem({
     required this.name,
     required this.color,
     required this.dateAdded,
     required this.category,
+    required this.season,
+    required this.imagePath,
   });
 }

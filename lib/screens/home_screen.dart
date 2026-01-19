@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../models/clothing_item.dart';
+import 'add_item_screen.dart';
+import 'dart:io';
 
 class WardrobeHomeScreen extends StatefulWidget {
   const WardrobeHomeScreen({super.key});
@@ -8,16 +12,14 @@ class WardrobeHomeScreen extends StatefulWidget {
 }
 
 class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
+  late Box<ClothingItem> clothingBox;
   final List<String> categories = ['Tops', 'Trousers', 'Skirts', 'Dresses'];
 
-  final List<Map<String, String>> clothingItems = [
-{'name': 'Long Sleeve Shirt', 'color': 'Blue', 'date': '21/01/2025'},
-    {'name': 'Short Sleeve Shirt', 'color': 'White', 'date': '21/01/2025'},
-    {'name': 'Long Sleeve Shirt', 'color': 'White', 'date': '21/01/2025'},
-    {'name': 'Long Sleeve Shirt', 'color': 'Grey', 'date': '21/01/2025'},
-    {'name': 'White Trousers', 'color': 'Blue', 'date': '21/01/2025'},
-    {'name': 'Brown Trousers', 'color': 'Brown', 'date': '21/01/2025'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    clothingBox = Hive.box<ClothingItem>('clothingItems');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +39,15 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
             Expanded(
               child: TabBarView(
                 children: categories.map((category) {
-                  final items = clothingItems.where((item) {
-                    switch (category) {
-                      case 'Tops':
-                        return item['name']!.contains('Shirt');
-                      case 'Trousers':
-                        return item['name']!.contains('Trousers');
-                      case 'Skirts':
-                        return item['name']!.contains('Skirt');
-                      case 'Dresses':
-                        return item['name']!.contains('Dress');
-                      default:
-                        return false;
-                    }
+                  final items = clothingBox.values.where((item) {
+                    return item.category == category; 
                   }).toList();
+
+                  if (items.isEmpty) {
+                    return const Center(
+                      child: Text('No items in this category.'),
+                    );
+                  }
 
                   return GridView.builder(
                     padding: const EdgeInsets.all(8.0),
@@ -63,7 +60,43 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
-                      return Card(
+                      final key = clothingBox.keys.elementAt(clothingBox.values.toList().indexOf(item));
+                      return GestureDetector(
+                        onLongPress: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Delete Item'),
+                              content: Text(
+                                'Are you sure you want to delete "${item.name}"?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    clothingBox.delete(key); // Delete from Hive
+                                    Navigator.pop(context);
+                                    setState(() {}); // Refresh grid
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Item deleted'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -71,13 +104,37 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(8),
                                 ),
-                                alignment: Alignment.center,
-                                child: const Icon(Icons.image, color: Colors.white, size: 40),
+                                child:
+                                    item.imagePath != null &&
+                                        item.imagePath!.isNotEmpty
+                                    ? Image.file(
+                                        File(item.imagePath!),
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Container(
+                                                color: Colors.grey[300],
+                                                child: const Icon(
+                                                  Icons.broken_image,
+                                                  color: Colors.red,
+                                                  size: 40,
+                                                ),
+                                              );
+                                            },
+                                      )
+                                    : Container(
+                                        color: Colors.grey[300],
+                                        alignment: Alignment.center,
+                                        child: const Icon(
+                                          Icons.image_not_supported,
+                                          color: Colors.grey,
+                                          size: 40,
+                                        ),
+                                      ),
                               ),
                             ),
                             Padding(
@@ -85,15 +142,16 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(item['name']!, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                                  Text(item.name, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
                                   const SizedBox(height: 4),
-                                  Text('Color: ${item['color']}', style: Theme.of(context).textTheme.bodySmall),
-                                  Text('Added: ${item['date']}', style: Theme.of(context).textTheme.bodySmall),
+                                  Text('Color: ${item.color}', style: Theme.of(context).textTheme.bodySmall),
+                                  Text('Added: ${item.dateAdded}', style: Theme.of(context).textTheme.bodySmall),
                                 ],
                               ),
                             ),
                           ],
                         ),
+                      ),
                       );
                     },
                   );
@@ -122,7 +180,14 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
         selectedItemColor: Colors.indigo[700],
         unselectedItemColor: Colors.grey[600],
         onTap: (index) {
-          // TODO
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddItemScreen()),
+            ).then((_) {
+              setState(() {});
+            });
+          }
         },
       ),
     );
