@@ -7,12 +7,11 @@ class WardrobeHomeScreen extends StatefulWidget {
   State<WardrobeHomeScreen> createState() => _WardrobeHomeScreenState();
 }
 
-class _WardrobeHomeScreenState extends State<WardrobeHomeScreen>
-    with SingleTickerProviderStateMixin {
+class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
   final List<String> categories = ['Tops', 'Trousers', 'Skirts', 'Dresses'];
 
   final List<Map<String, String>> clothingItems = [
-    {'name': 'Long Sleeve Shirt', 'color': 'Blue', 'date': '21/01/2025'},
+{'name': 'Long Sleeve Shirt', 'color': 'Blue', 'date': '21/01/2025'},
     {'name': 'Short Sleeve Shirt', 'color': 'White', 'date': '21/01/2025'},
     {'name': 'Long Sleeve Shirt', 'color': 'White', 'date': '21/01/2025'},
     {'name': 'Long Sleeve Shirt', 'color': 'Grey', 'date': '21/01/2025'},
@@ -32,8 +31,8 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen>
           children: [
             TabBar(
               tabs: categories
-                  .map((category) => Tab(text: category))
-                  .toList(),
+              .map((category) => Tab(text: category))
+              .toList(),
             ),
             Expanded(
               child: TabBarView(
@@ -56,11 +55,11 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen>
                   return GridView.builder(
                     padding: const EdgeInsets.all(8.0),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount( //Grid with fixed no of columns
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 1,
-                    ),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          childAspectRatio: 1,
+                        ),
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
@@ -103,6 +102,28 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen>
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.style_outlined),
+            label: 'Outfit Suggestions',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle_outline),
+            label: 'Add',
+          ),
+        ],
+        currentIndex: 0,
+        selectedItemColor: Colors.indigo[700],
+        unselectedItemColor: Colors.grey[600],
+        onTap: (index) {
+          // TODO
+        },
       ),
     );
   }
