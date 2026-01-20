@@ -60,6 +60,16 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
           selectedTop = tops[random.nextInt(tops.length)];
           selectedBottom = bottoms[random.nextInt(bottoms.length)];
       }
+      analytics.logEvent(
+        name: 'generate_outfit',
+        parameters: {
+          'season': selectedSeason,
+          'top': selectedTop?.name ?? 'none',
+          'bottom': selectedBottom?.name ?? 'none',
+          'dress': selectedDress?.name ?? 'none',
+        },
+      );
+
     });
     // Send notification about the generated outfit
     _sendOutfitNotification();

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:home_assignment/main.dart';
 import '../models/clothing_item.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import '../main.dart';
 
 class AddItemScreen extends StatefulWidget{
   const AddItemScreen({super.key});
@@ -101,6 +103,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
     final box = Hive.box<ClothingItem>('clothingItems');
     await box.add(newItem);
+
+    analytics.logEvent(
+    name: 'add_clothing_item',
+    parameters: {
+      'name': name,
+      'color': color,
+      'category': seclectedCategory,
+      'season': seclectedSeason,
+      'date_added': _autoDate,
+    },
+  );
 
     if (mounted) {
       Navigator.of(context).pop();

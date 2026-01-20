@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "872489366835",
+    "project_id": "mywardrobeapp-5d31a",
+    "storage_bucket": "mywardrobeapp-5d31a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872489366835:android:013f285348d0c98afa3a46",
+        "android_client_info": {
+          "package_name": "com.example.home_assignment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiPrx3PAUambYZ-aACzGyzOivwUV_xcls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

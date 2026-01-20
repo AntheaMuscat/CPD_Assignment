@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:home_assignment/main.dart';
 import '../models/clothing_item.dart';
 import 'add_item_screen.dart';
 import 'dart:io';
@@ -80,6 +81,16 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                                 TextButton(
                                   onPressed: () {
                                     clothingBox.delete(key); // Delete from Hive
+                                    analytics.logEvent(
+                                      name: 'delete_clothing_item',
+                                      parameters: {
+                                        'name': item.name,
+                                        'color': item.color,
+                                        'category': item.category,
+                                        'season': item.season,
+                                        'date_added': item.dateAdded,
+                                      },
+                                    );
                                     Navigator.pop(context);
                                     setState(() {}); // Refresh grid
                                     ScaffoldMessenger.of(context).showSnackBar(
