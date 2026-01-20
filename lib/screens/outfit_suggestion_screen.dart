@@ -15,13 +15,22 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
   ClothingItem? selectedBottom;
   ClothingItem? selectedDress;
 
+  String selectedSeason = 'All';
+
+  final List<String> seasons = ['All', 'Spring', 'Summer', 'Autumn', 'Winter'];
+
   void _generateOutfit(){
     final box = Hive.box<ClothingItem>('clothingItems');
     final items = box.values.toList();
 
-    final tops = items.where((item)=> item.category == 'Tops').toList();
-    final bottoms = items.where((item)=> item.category == 'Trousers' || item.category == 'Skirts').toList();
-    final dresses = items.where((item)=> item.category == 'Dresses').toList();
+    // Filter items by season 
+    final seasonalItems = items.where((item){
+      return selectedSeason == 'All' || item.season == selectedSeason || item.season == 'All';
+    }).toList();
+
+    final tops = seasonalItems.where((item)=> item.category == 'Tops').toList();
+    final bottoms = seasonalItems.where((item)=> item.category == 'Trousers' || item.category == 'Skirts').toList();
+    final dresses = seasonalItems.where((item)=> item.category == 'Dresses').toList();
 
     final random = Random();
     final useDress = random.nextBool();
@@ -105,9 +114,28 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Generate an outfit based on items in your wardrobe.',
+              'Generate an outfit based on the selected season.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.indigo),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              initialValue: selectedSeason,
+              decoration: const InputDecoration(
+                labelText: 'Season',
+                border: OutlineInputBorder(),
+              ),
+              items: seasons.map((season) {
+                return DropdownMenuItem(
+                  value: season,
+                  child: Text(season),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedSeason = value!;
+                });
+              },
             ),
             const SizedBox(height: 16),
             Expanded(
