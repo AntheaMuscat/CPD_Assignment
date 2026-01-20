@@ -165,17 +165,27 @@ class _AddItemScreenState extends State<AddItemScreen> {
             const SizedBox(height: 24),
             TextField(
               controller: _nameField,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Item Name',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 1.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 2.0),
+                ),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _colorField,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Color',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 1.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 2.0),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -191,9 +201,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: seclectedCategory,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Category',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 1.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 2.0),
+                ),
               ),
               items: categories.map((category) {
                 return DropdownMenuItem<String>(
@@ -210,9 +225,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: seclectedSeason,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Season',
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 1.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo, width: 2.0),
+                ),
               ),
               items: seasons.map((season) {
                 return DropdownMenuItem<String>(

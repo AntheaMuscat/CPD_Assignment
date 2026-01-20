@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/clothing_item.dart';
 import 'add_item_screen.dart';
 import 'dart:io';
+import 'outfit_suggestion_screen.dart';
 
 class WardrobeHomeScreen extends StatefulWidget {
   const WardrobeHomeScreen({super.key});
@@ -25,7 +26,8 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Wardrobe')
+        title: const Text('My Wardrobe', style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.indigo,
       ),
       body: DefaultTabController(
         length: categories.length,
@@ -100,6 +102,7 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        color: Colors.blue[50],
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -109,10 +112,8 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                                   top: Radius.circular(8),
                                 ),
                                 child:
-                                    item.imagePath != null &&
-                                        item.imagePath!.isNotEmpty
-                                    ? Image.file(
-                                        File(item.imagePath!),
+                                    Image.file(
+                                        File(item.imagePath),
                                         fit: BoxFit.cover,
                                         errorBuilder:
                                             (context, error, stackTrace) {
@@ -126,15 +127,6 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                                               );
                                             },
                                       )
-                                    : Container(
-                                        color: Colors.grey[300],
-                                        alignment: Alignment.center,
-                                        child: const Icon(
-                                          Icons.image_not_supported,
-                                          color: Colors.grey,
-                                          size: 40,
-                                        ),
-                                      ),
                               ),
                             ),
                             Padding(
@@ -142,10 +134,10 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(item.name, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                                  Text(item.name, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.indigo[800])),
                                   const SizedBox(height: 4),
-                                  Text('Color: ${item.color}', style: Theme.of(context).textTheme.bodySmall),
-                                  Text('Added: ${item.dateAdded}', style: Theme.of(context).textTheme.bodySmall),
+                                  Text('Color: ${item.color}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.indigo[700])),
+                                  Text('Added: ${item.dateAdded}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.indigo[700])),
                                 ],
                               ),
                             ),
@@ -180,6 +172,12 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
         selectedItemColor: Colors.indigo[700],
         unselectedItemColor: Colors.grey[600],
         onTap: (index) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const OutfitSuggestionScreen()),
+            );
+          } else
           if (index == 2) {
             Navigator.push(
               context,
