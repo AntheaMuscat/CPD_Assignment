@@ -3,6 +3,8 @@ import '../../models/clothing_item.dart';
 import 'dart:math';
 import 'dart:io';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../main.dart';
 
 class OutfitSuggestionScreen extends StatefulWidget {
   const OutfitSuggestionScreen({super.key});
@@ -19,6 +21,18 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
 
   final List<String> seasons = ['All', 'Spring', 'Summer', 'Autumn', 'Winter'];
 
+  @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+  }
+
+    Future<void> _requestNotificationPermission() async{
+      final androidPlugin = flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      await androidPlugin?.requestNotificationsPermission();
+    }
   void _generateOutfit(){
     final box = Hive.box<ClothingItem>('clothingItems');
     final items = box.values.toList();
@@ -47,6 +61,39 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
           selectedBottom = bottoms[random.nextInt(bottoms.length)];
       }
     });
+    // Send notification about the generated outfit
+    _sendOutfitNotification();
+  }
+
+  Future<void> _sendOutfitNotification() async{
+    String message;
+    if(selectedDress != null){
+      message = 'How about wearing your "${selectedDress!.name}" dress today?';
+    } else if(selectedTop != null && selectedBottom != null){
+      message = 'Try pairing your "${selectedTop!.name}" top with "${selectedBottom!.name}" bottom!';
+    } else {
+      message = 'No outfit could be generated. Please add more clothing items.';
+    }
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'outfit_channel',
+          'Outfit Suggestions',
+          channelDescription: 'Notifications for new outfit suggestions',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'ticker',
+        );
+
+        final NotificationDetails platformDetails = NotificationDetails(
+          android: androidDetails);
+        
+        await flutterLocalNotificationsPlugin.show(
+          0,
+          'Your Outfit Suggestion',
+          message,
+          platformDetails,
+        );
   }
 
   Widget _buildSuggestionCard({
