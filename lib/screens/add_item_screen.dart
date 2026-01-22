@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import '../main.dart';
 
 class AddItemScreen extends StatefulWidget{
   const AddItemScreen({super.key});
@@ -43,11 +42,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
           _selectedImage = File(imagePath);
         });
       }
-    } catch (e){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red,),
-      );
-    }
+    }catch (e) {
+  if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+    );
+  }
+}
   }
 
   void _pickImageSource(){
