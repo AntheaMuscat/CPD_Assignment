@@ -1,0 +1,48 @@
+name: Flutter CI Pipeline
+
+# When this workflow should run
+# Runs automatically on pushes and pull requests to the main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build & Test Flutter App
+    runs-on: ubuntu-latest
+
+    steps:
+      #Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Flutter environment
+      # Installs Flutter SDK
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # Check Flutter version
+      - name: Flutter version
+        run: flutter --version
+
+      # Install dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Analyze Dart code
+      - name: Run Flutter analyzer
+        run: flutter analyze
+
+      # Run unit tests
+      - name: Run tests
+        run: flutter test
+
+      # Build Android APK
+      - name: Build APK
+        run: flutter build apk --debug
