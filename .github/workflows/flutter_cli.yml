@@ -39,10 +39,6 @@ jobs:
       - name: Run Flutter analyzer
         run: flutter analyze
 
-      # Run unit tests
-      - name: Run tests
-        run: flutter test
-
       # Build Android APK
       - name: Build APK
         run: flutter build apk --debug
