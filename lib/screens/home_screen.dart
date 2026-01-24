@@ -15,9 +15,11 @@ class WardrobeHomeScreen extends StatefulWidget {
 
 class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
   late Box<ClothingItem> clothingBox;
+  //Filter categories
   final List<String> categories = ['Tops', 'Trousers', 'Skirts', 'Dresses'];
 
   @override
+  // Initialize Hive box
   void initState() {
     super.initState();
     clothingBox = Hive.box<ClothingItem>('clothingItems');
@@ -43,7 +45,7 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
               child: TabBarView(
                 children: categories.map((category) {
                   final items = clothingBox.values.where((item) {
-                    return item.category == category; 
+                    return item.category == category;  // Filter by category
                   }).toList();
 
                   if (items.isEmpty) {
@@ -81,7 +83,7 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
                                 TextButton(
                                   onPressed: () {
                                     clothingBox.delete(key); // Delete from Hive
-                                    analytics.logEvent(
+                                    analytics.logEvent( // Log deletion event to Firebase Analytics
                                       name: 'delete_clothing_item',
                                       parameters: {
                                         'name': item.name,
@@ -194,7 +196,7 @@ class _WardrobeHomeScreenState extends State<WardrobeHomeScreen> {
               context,
               MaterialPageRoute(builder: (context) => const AddItemScreen()),
             ).then((_) {
-              setState(() {});
+              setState(() {}); // Refresh grid after returning from AddItemScreen
             });
           }
         },

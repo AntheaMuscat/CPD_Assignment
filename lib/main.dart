@@ -17,7 +17,7 @@ Future<void> main() async {
 
   // Initialize Firebase with options
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // ← USE THIS
+    options: DefaultFirebaseOptions.currentPlatform, 
   );
   analytics = FirebaseAnalytics.instance;
 

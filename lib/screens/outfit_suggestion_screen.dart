@@ -18,49 +18,39 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
   ClothingItem? selectedDress;
 
   String selectedSeason = 'All';
-
+  //Season options for filtering
   final List<String> seasons = ['All', 'Spring', 'Summer', 'Autumn', 'Winter'];
 
-  @override
-  void initState() {
-    super.initState();
-    _requestNotificationPermission();
-  }
-
-    Future<void> _requestNotificationPermission() async{
-      final androidPlugin = flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      await androidPlugin?.requestNotificationsPermission();
-    }
   void _generateOutfit(){
+    // Access Hive box
     final box = Hive.box<ClothingItem>('clothingItems');
-    final items = box.values.toList();
+    final items = box.values.toList(); // Get all items
 
     // Filter items by season 
     final seasonalItems = items.where((item){
       return selectedSeason == 'All' || item.season == selectedSeason || item.season == 'All';
-    }).toList();
+    }).toList(); // Items matching the season or 'All' season (all season can be used anytime)
 
     final tops = seasonalItems.where((item)=> item.category == 'Tops').toList();
     final bottoms = seasonalItems.where((item)=> item.category == 'Trousers' || item.category == 'Skirts').toList();
     final dresses = seasonalItems.where((item)=> item.category == 'Dresses').toList();
 
     final random = Random();
-    final useDress = random.nextBool();
+    final useDress = random.nextBool(); // Randomly decide to use dress or top+bottom
 
     setState(() {
       selectedTop = null;
       selectedBottom = null;
       selectedDress = null;
 
+      // Select random dress or top+bottom
       if (useDress && dresses.isNotEmpty) {
         selectedDress = dresses[random.nextInt(dresses.length)];
       } else if(tops.isNotEmpty && bottoms.isNotEmpty) {
           selectedTop = tops[random.nextInt(tops.length)];
           selectedBottom = bottoms[random.nextInt(bottoms.length)];
       }
-      analytics.logEvent(
+      analytics.logEvent( // Log outfit generation event to Firebase Analytics
         name: 'generate_outfit',
         parameters: {
           'season': selectedSeason,
@@ -85,6 +75,7 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
       message = 'No outfit could be generated. Please add more clothing items.';
     }
 
+    // Configure notification details and show notification
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'outfit_channel',
@@ -190,7 +181,7 @@ class _OutfitSuggestionScreenState extends State<OutfitSuggestionScreen> {
               }).toList(),
               onChanged: (value) {
                 setState(() {
-                  selectedSeason = value!;
+                  selectedSeason = value!; // Update selected season
                 });
               },
             ),

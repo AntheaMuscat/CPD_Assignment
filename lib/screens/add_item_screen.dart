@@ -15,6 +15,7 @@ class AddItemScreen extends StatefulWidget{
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
+  // Controllers and state variables for form fields
   final _nameField = TextEditingController();
   final _colorField = TextEditingController();
   String seclectedCategory = 'Tops';
@@ -30,16 +31,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   Future<void> _pickImage(ImageSource source) async {
     try{
+      // Pick image using image_picker
       final XFile? image = await _picker.pickImage(source: source, preferredCameraDevice: CameraDevice.rear);
       if (image != null){
-        final directory = await getApplicationDocumentsDirectory();
-        final String imageName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-        final String imagePath = '${directory.path}/$imageName';
+        final directory = await getApplicationDocumentsDirectory(); // Get app documents directory
+        final String imageName = '${DateTime.now().millisecondsSinceEpoch}.jpg'; // Unique image name
+        final String imagePath = '${directory.path}/$imageName'; // Full path to save image
 
-        await File(image.path).copy(imagePath);
+        await File(image.path).copy(imagePath); // Copy picked image to app directory
 
         setState(() {
-          _selectedImage = File(imagePath);
+          _selectedImage = File(imagePath); // Update state with selected image
         });
       }
     }catch (e) {
@@ -61,7 +63,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           TextButton(
             onPressed: (){
               Navigator.of(context).pop();
-              _pickImage(ImageSource.camera);
+              _pickImage(ImageSource.camera); // Pick image from camera
             },
             child: const Text('Camera')
           ),
@@ -70,7 +72,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               Navigator.of(context).pop();
               _pickImage(ImageSource.gallery);
             },
-            child: const Text('Gallery')
+            child: const Text('Gallery') // Pick image from gallery
           ),
         ],
       )
@@ -100,12 +102,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
       category: seclectedCategory,
       season: seclectedSeason,
       imagePath: _selectedImage!.path,
-    );
+    ); // Create new ClothingItem instance
 
     final box = Hive.box<ClothingItem>('clothingItems');
-    await box.add(newItem);
+    await box.add(newItem); // Save new item to Hive
 
-    analytics.logEvent(
+    analytics.logEvent( // Log add event to Firebase Analytics
     name: 'add_clothing_item',
     parameters: {
       'name': name,
@@ -149,7 +151,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           width: _selectedImage == null ? 2 : 1,
                         ),
                       ),
-                      child: _selectedImage == null
+                      child: _selectedImage == null // No image selected show placeholder saying photo is required
                     ? const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -163,7 +165,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           Text('Tap to take photo with camera or pick from gallery'),
                         ],
                       )
-                    : ClipRRect(
+                    : ClipRRect( // if image selected show the image
                         borderRadius: BorderRadius.circular(16),
                         child: Image.file(_selectedImage!, fit: BoxFit.cover),
                       ),
